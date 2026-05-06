@@ -1,0 +1,388 @@
+/* ═══════════════════════════════════════════════════
+   MedIPL v2 — Styling
+   Font: Inter (body) + JetBrains Mono (code/labels)
+   Palette: dark navy + electric blue accent
+   ═══════════════════════════════════════════════════ */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+:root {
+    --bg:          #0b0f1a;
+    --bg2:         #111827;
+    --bg3:         #1a2235;
+    --accent:      #38bdf8;      /* sky-400 */
+    --accent-dim:  #0ea5e9;
+    --accent-glow: rgba(56,189,248,0.18);
+    --text:        #f0f6fc;
+    --text-muted:  #94a3b8;      /* slate-400 — legible on dark */
+    --border:      #2d3748;
+    --success:     #4ade80;
+    --warning:     #fbbf24;
+    --danger:      #f87171;
+    --font-body:   'Inter', sans-serif;
+    --font-mono:   'JetBrains Mono', monospace;
+}
+
+/* ── Global ───────────────────────────────────────── */
+html, body, [class*="css"] {
+    font-family: var(--font-body) !important;
+    background-color: var(--bg) !important;
+    color: var(--text) !important;
+}
+
+/* ── Sidebar ──────────────────────────────────────── */
+[data-testid="stSidebar"] {
+    background-color: var(--bg2) !important;
+    border-right: 1px solid var(--border) !important;
+}
+[data-testid="stSidebar"] p,
+[data-testid="stSidebar"] label,
+[data-testid="stSidebar"] span {
+    color: var(--text) !important;
+}
+
+.sidebar-logo {
+    font-family: var(--font-mono) !important;
+    font-size: 1.7rem !important;
+    font-weight: 600;
+    color: var(--accent) !important;
+    letter-spacing: 0.03em;
+    padding: 0.4rem 0;
+}
+.sidebar-subtitle {
+    font-size: 0.7rem !important;
+    color: var(--text-muted) !important;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-top: -0.5rem !important;
+    font-family: var(--font-mono) !important;
+}
+
+/* ── Main header ──────────────────────────────────── */
+.main-header {
+    display: flex;
+    align-items: baseline;
+    gap: 1rem;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 0.75rem;
+    margin-bottom: 1.5rem;
+}
+.main-header h1 {
+    font-family: var(--font-mono) !important;
+    font-size: 1.5rem !important;
+    color: var(--accent) !important;
+    font-weight: 600 !important;
+    margin: 0 !important;
+    letter-spacing: 0.04em;
+}
+.main-header span {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    font-family: var(--font-mono);
+}
+
+/* ── Welcome box ──────────────────────────────────── */
+.welcome-box {
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 3rem 2rem;
+    text-align: center;
+    background: var(--bg3);
+    margin-top: 2rem;
+}
+.welcome-box h2 {
+    font-family: var(--font-mono) !important;
+    color: var(--accent) !important;
+    font-size: 1.5rem !important;
+    margin-bottom: 0.5rem !important;
+}
+.welcome-box p { color: var(--text-muted) !important; font-size: 0.95rem !important; }
+.welcome-box .supported {
+    margin-top: 1rem;
+    font-family: var(--font-mono);
+    font-size: 0.8rem !important;
+    color: var(--text) !important;
+    background: var(--bg2);
+    padding: 0.4rem 1.2rem;
+    border-radius: 4px;
+    display: inline-block;
+    border: 1px solid var(--border);
+}
+
+/* ── Info box (Recommended Window) ───────────────── */
+.info-box {
+    background: var(--bg3);
+    border: 1px solid var(--accent-dim);
+    border-radius: 6px;
+    padding: 0.55rem 1rem;
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    color: var(--text);           /* white text, always visible */
+    display: inline-block;
+}
+
+/* ── Tabs ─────────────────────────────────────────── */
+[data-testid="stTabs"] [role="tablist"] {
+    border-bottom: 1px solid var(--border) !important;
+    gap: 0 !important;
+    background: transparent !important;
+}
+[data-testid="stTabs"] button[role="tab"] {
+    font-family: var(--font-mono) !important;
+    font-size: 0.78rem !important;
+    font-weight: 500 !important;
+    color: var(--text-muted) !important;   /* muted but clearly readable */
+    background: transparent !important;
+    border: none !important;
+    border-bottom: 2px solid transparent !important;
+    padding: 0.55rem 1.1rem !important;
+    letter-spacing: 0.02em;
+    transition: color 0.15s;
+}
+[data-testid="stTabs"] button[role="tab"][aria-selected="true"] {
+    color: var(--accent) !important;
+    border-bottom: 2px solid var(--accent) !important;
+}
+[data-testid="stTabs"] button[role="tab"]:hover {
+    color: var(--text) !important;
+    background: var(--accent-glow) !important;
+    border-radius: 4px 4px 0 0;
+}
+
+/* ── Buttons ──────────────────────────────────────── */
+[data-testid="stButton"] > button {
+    font-family: var(--font-mono) !important;
+    font-size: 0.78rem !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.04em !important;
+    border-radius: 5px !important;
+    transition: all 0.15s ease !important;
+}
+/* Primary */
+[data-testid="stButton"] > button[kind="primary"] {
+    background-color: var(--accent) !important;
+    color: #05101f !important;           /* dark text on bright button */
+    border: none !important;
+}
+[data-testid="stButton"] > button[kind="primary"]:hover {
+    background-color: #7dd3fc !important;
+    box-shadow: 0 0 14px var(--accent-glow) !important;
+}
+/* Secondary */
+[data-testid="stButton"] > button[kind="secondary"] {
+    background-color: transparent !important;
+    color: var(--text) !important;       /* white text, always visible */
+    border: 1px solid var(--border) !important;
+}
+[data-testid="stButton"] > button[kind="secondary"]:hover {
+    border-color: var(--accent) !important;
+    color: var(--accent) !important;
+}
+
+/* ── Sliders ──────────────────────────────────────── */
+[data-testid="stSlider"] > label {
+    font-family: var(--font-mono) !important;
+    font-size: 0.75rem !important;
+    color: var(--text) !important;      /* white, was dark/invisible */
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    font-weight: 500 !important;
+}
+[data-testid="stSlider"] [data-testid="stThumbValue"] {
+    color: var(--accent) !important;
+    font-family: var(--font-mono) !important;
+}
+/* Slider track */
+[data-testid="stSlider"] div[role="slider"] {
+    background-color: var(--accent) !important;
+}
+
+/* ── Radio buttons ────────────────────────────────── */
+[data-testid="stRadio"] > label {
+    font-family: var(--font-mono) !important;
+    font-size: 0.72rem !important;
+    color: var(--text) !important;      /* white, visible */
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 600;
+}
+/* Radio option text */
+[data-testid="stRadio"] div[role="radiogroup"] label p,
+[data-testid="stRadio"] div[role="radiogroup"] label span {
+    font-family: var(--font-body) !important;
+    font-size: 0.88rem !important;
+    color: var(--text) !important;      /* white always */
+    text-transform: none;
+    letter-spacing: normal;
+    font-weight: 400;
+}
+/* Selected radio option */
+[data-testid="stRadio"] div[role="radiogroup"] label:has(input:checked) span,
+[data-testid="stRadio"] div[role="radiogroup"] label:has(input:checked) p {
+    color: var(--accent) !important;
+    font-weight: 500 !important;
+}
+
+/* ── Selectbox ────────────────────────────────────── */
+[data-testid="stSelectbox"] > label {
+    font-family: var(--font-mono) !important;
+    font-size: 0.72rem !important;
+    color: var(--text) !important;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    font-weight: 600;
+}
+[data-testid="stSelectbox"] div[data-baseweb="select"] {
+    background-color: var(--bg3) !important;
+    border-color: var(--border) !important;
+}
+[data-testid="stSelectbox"] div[data-baseweb="select"] span {
+    color: var(--text) !important;
+    font-family: var(--font-body) !important;
+}
+
+/* ── Expander ─────────────────────────────────────── */
+[data-testid="stExpander"] {
+    border: 1px solid var(--border) !important;
+    border-radius: 7px !important;
+    background: var(--bg3) !important;
+}
+[data-testid="stExpander"] summary {
+    font-family: var(--font-mono) !important;
+    font-size: 0.83rem !important;
+    color: var(--text) !important;
+    font-weight: 500;
+}
+[data-testid="stExpander"] summary:hover {
+    color: var(--accent) !important;
+}
+
+/* ── File uploader ────────────────────────────────── */
+[data-testid="stFileUploader"] {
+    border: 1px dashed var(--border) !important;
+    border-radius: 7px !important;
+    background: var(--bg3) !important;
+}
+[data-testid="stFileUploader"] span,
+[data-testid="stFileUploader"] p {
+    color: var(--text-muted) !important;
+    font-size: 0.8rem !important;
+}
+
+/* ── Image labels ─────────────────────────────────── */
+.img-label {
+    font-family: var(--font-mono) !important;
+    font-size: 0.7rem !important;
+    color: var(--text-muted) !important;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    text-align: center;
+    margin-bottom: 0.3rem !important;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 0.3rem;
+}
+
+/* ── Kernel display ───────────────────────────────── */
+.kernel-box {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    padding: 0.8rem 1.2rem;
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+}
+.kernel-box .kernel-title {
+    font-size: 0.68rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 0.5rem;
+}
+/* Kernel cell colors — high contrast */
+.positive { color: #4ade80; font-weight: 600; }   /* green */
+.negative { color: #f87171; font-weight: 600; }   /* red */
+.zero     { color: #64748b; }                     /* slate */
+
+/* ── Metrics ──────────────────────────────────────── */
+[data-testid="stMetric"] {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 0.4rem 0.7rem;
+}
+[data-testid="stMetricLabel"] {
+    font-family: var(--font-mono) !important;
+    font-size: 0.65rem !important;
+    color: var(--text-muted) !important;
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
+}
+[data-testid="stMetricValue"] {
+    font-family: var(--font-mono) !important;
+    font-size: 0.95rem !important;
+    color: var(--accent) !important;
+    font-weight: 600 !important;
+}
+
+/* ── Section titles (h3) ──────────────────────────── */
+h3 {
+    font-family: var(--font-mono) !important;
+    font-size: 1rem !important;
+    color: var(--text) !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.02em;
+}
+
+/* ── Caption ──────────────────────────────────────── */
+[data-testid="stCaptionContainer"] p {
+    font-size: 0.78rem !important;
+    color: var(--text-muted) !important;
+    font-family: var(--font-body) !important;
+}
+
+/* ── Alert / Info / Warning boxes ────────────────── */
+[data-testid="stAlert"] {
+    border-radius: 6px !important;
+    font-size: 0.83rem !important;
+    font-family: var(--font-body) !important;
+}
+/* Make info/warning text always visible */
+[data-testid="stAlert"] p,
+[data-testid="stAlert"] span {
+    color: inherit !important;
+}
+
+/* ── Divider ──────────────────────────────────────── */
+hr { border-color: var(--border) !important; margin: 1rem 0 !important; }
+
+/* ── Images ───────────────────────────────────────── */
+[data-testid="stImage"] img {
+    border-radius: 5px;
+    border: 1px solid var(--border);
+}
+
+/* ── Footer ───────────────────────────────────────── */
+.footer {
+    margin-top: 3rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border);
+    text-align: center;
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    color: var(--text-muted);
+    letter-spacing: 0.08em;
+}
+
+/* ── Markdown bold & strong ───────────────────────── */
+strong, b {
+    color: var(--text) !important;
+    font-weight: 600 !important;
+}
+
+/* ── Sidebar WC/WW values ─────────────────────────── */
+.wc-ww-display {
+    font-family: var(--font-mono);
+    font-size: 0.73rem;
+    color: var(--text-muted);
+    margin-top: -0.3rem;
+}
