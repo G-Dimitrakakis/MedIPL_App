@@ -14,7 +14,6 @@ import numpy as np
 import streamlit as st
 from streamlit_cropper import st_cropper
 from PIL import Image
-from image_io import load_image
 from processing import (
     apply_simple_window,
     apply_advanced_window,
@@ -26,6 +25,7 @@ from processing import (
     apply_fbp,
     apply_art,
     SPATIAL_FILTER_NAMES,
+    load_image
 )
 from ui_components import (
     render_header, render_footer, render_sidebar_windowing,

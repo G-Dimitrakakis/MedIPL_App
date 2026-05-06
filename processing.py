@@ -26,6 +26,28 @@ def _hash_array(arr: np.ndarray) -> bytes:
     return arr.tobytes()
 
 _cache_kwargs = {"hash_funcs": {np.ndarray: _hash_array}}
+
+
+from PIL import Image
+import pydicom
+
+def load_image(uploaded_file):
+    """
+    Φορτώνει εικόνες (Standard ή DICOM) και τις μετατρέπει σε NumPy array.
+    """
+    try:
+        if uploaded_file.name.lower().endswith(".dcm"):
+            ds = pydicom.dcmread(uploaded_file)
+            # Μετατροπή σε float για να αποφύγουμε overflow στα processing βήματα
+            img = ds.pixel_array.astype(np.float32)
+        else:
+            img_pil = Image.open(uploaded_file).convert("L") # Grayscale
+            img = np.array(img_pil).astype(np.float32)
+        return img
+    except Exception as e:
+        import streamlit as st
+        st.error(f"Error loading image: {e}")
+        return None
 # ══════════════════════════════════════════════════════════════════════════════
 # WINDOWING
 # ══════════════════════════════════════════════════════════════════════════════
