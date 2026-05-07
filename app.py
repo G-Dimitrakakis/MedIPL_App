@@ -14,6 +14,7 @@ import numpy as np
 import streamlit as st
 from streamlit_cropper import st_cropper
 from PIL import Image
+import pandas as pd
 from processing import (
     apply_simple_window,
     apply_advanced_window,
@@ -115,29 +116,42 @@ with st.sidebar:
         original = st.session_state.get("original_image")
         if original is None:
             return None
-        for key in ["win_processed", "hist_processed", "spat_processed", "freq_processed"]:
-            if st.session_state.get(key) is not None:
-                arr = apply_simple_window(st.session_state[key], 128, 256).astype(np.uint8)
-                return Image.fromarray(arr)
-        return Image.fromarray(apply_simple_window(original, 128, 256).astype(np.uint8))
+        
+        # Χρησιμοποιούμε το export_source που ορίσαμε στα Tabs για να ξέρουμε ΠΟΙΑ εικόνα βλέπει ο χρήστης
+        source_key = st.session_state.get("export_source")
+        
+        if source_key and st.session_state.get(source_key) is not None:
+            raw_data = st.session_state[source_key]
+        else:
+            # Αν δεν έχει γίνει καμία επεξεργασία, πάρε την αρχική
+            raw_data = original
+
+        # Μετατροπή σε 8-bit για αποθήκευση (εφαρμογή κλίμακας 0-255)
+        # Προσοχή: Αν η εικόνα είναι ήδη 0-255 από το ιστόγραμμα, το apply_simple_window ίσως την αλλάξει.
+        # Καλύτερα να την κάνουμε clip και cast απευθείας:
+        arr = np.clip(raw_data, 0, 255).astype(np.uint8)
+        return Image.fromarray(arr)
 
     export_img = _get_export_image()
 
     if export_img is None:
         st.caption("Upload an image to enable export.")
     else:
-        # ROI overlay αν είναι ενεργό
-        if roi_enabled and st.session_state.get("roi_box") is not None:
+        # ROI overlay
+        # Βεβαιώσου ότι το roi_enabled ορίζεται από το checkbox του ROI Tab
+        if st.session_state.get("roi_enabled") and st.session_state.get("roi_box") is not None:
             box = st.session_state["roi_box"]
             export_img = export_img.copy()
             draw = ImageDraw.Draw(export_img)
+            
+            # Σχεδίαση με βάση τις συντεταγμένες που πλέον υπάρχουν!
             draw.rectangle(
-                [box["left"], box["top"],
-                box["left"] + box["width"], box["top"] + box["height"]],
-                outline="lime", width=2
+                [box["left"], box["top"], box["left"] + box["width"], box["top"] + box["height"]], 
+                outline='#00FF00', 
+                width=5 # Κάνε το 5-10 για να φαίνεται σίγουρα
             )
-            st.caption("📍 ROI marked on export")
 
+        # Προετοιμασία αρχείου
         buf = io.BytesIO()
         export_img.save(buf, format="PNG")
         buf.seek(0)
@@ -180,22 +194,26 @@ if roi_enabled:
     with col1:
         # Το εργαλείο ROI. Επιστρέφει την κομμένη εικόνα ως Image object.
         # Χρησιμοποιούμε την static_orig_display για να είναι καθαρή η επιλογή.
-        cropped_img = st_cropper(
+        roi_coords = st_cropper(
             Image.fromarray(static_orig_display), 
             realtime_update=True, 
             box_color='#00FF00',
-            aspect_ratio=None # Επιτρέπει ελεύθερο σχήμα ορθογωνίου
-        )
+            aspect_ratio=None, # Επιτρέπει ελεύθερο σχήμα ορθογωνίου
+            return_type='box')
+        # Αποθηκεύουμε τις συντεταγμένες στο session_state για το sidebar
+        st.session_state["roi_box"] = roi_coords
+        st.session_state["roi_enabled"] = True
     
     with col2:
         st.markdown("##### ROI Preview")
         
-        # Μετατροπή της εικόνας ROI σε πίνακα NumPy
-        roi_array = np.array(cropped_img)
+        # Εφόσον πλέον παίρνουμε συντεταγμένες (coords), κόβουμε την εικόνα χειροκίνητα για το preview
+        left, top, width, height = roi_coords['left'], roi_coords['top'], roi_coords['width'], roi_coords['height']
         
-        # Κανονικοποίηση (Normalization) για να πάει στο εύρος 0-255
-        # Αν η εικόνα έχει ήδη τιμές 0-255 σε float, αρκεί το .astype(np.uint8)
-        # Αν έχει μεγαλύτερο εύρος (π.χ. 0-1000), θέλει κλιμάκωση:
+        # Κόψιμο (Crop) από τον πίνακα static_orig_display
+        roi_array = static_orig_display[top:top+height, left:left+width]
+        
+        # Το υπόλοιπο display logic σου (Normalization κτλ)
         roi_min, roi_max = roi_array.min(), roi_array.max()
         if roi_max > roi_min:
             roi_rescaled = (roi_array - roi_min) / (roi_max - roi_min) * 255
@@ -203,11 +221,8 @@ if roi_enabled:
             roi_rescaled = roi_array
             
         roi_final = roi_rescaled.astype(np.uint8)
-        
-        # Εμφάνιση της διορθωμένης εικόνας
         st.image(roi_final, use_container_width=True)
         
-        # Στατιστικά (χρησιμοποίησε τον αρχικό roi_array για ακρίβεια)
         st.markdown("##### Statistics")
         st.write(f"**Mean:** {np.mean(roi_array):.2f}")
         st.write(f"**Std Dev:** {np.std(roi_array):.2f}")
@@ -351,6 +366,7 @@ with tab_hist:
     st.divider()
 
     hist_result = st.session_state.hist_processed
+    hist_result = st.session_state.get("hist_processed")
     if hist_result is None:
         render_image_pair(static_orig_display, static_orig_display, 
                          label_left="Original (Fixed)", label_right="—")
@@ -546,85 +562,78 @@ with tab_recon:
                 st.rerun()
     st.divider()
 
-# 1. Ανάκτηση δεδομένων από το session_state
-sinogram = st.session_state.get("last_sinogram")
-I_FBP = st.session_state.get("recon_FBP")
-I_ART = st.session_state.get("recon_ART")
-stored_method = st.session_state.get("recon_method")
+    # --- Εμφάνιση Αποτελεσμάτων κάτω από το Divider ---
+    sinogram = st.session_state.get("last_sinogram")
+    I_FBP = st.session_state.get("recon_FBP")
+    I_ART = st.session_state.get("recon_ART")
+    stored_method = st.session_state.get("recon_method")
 
-if sinogram is None:
-    st.info("💡 Sinogram Empty")
-else:
-    # Βοηθητική συνάρτηση για σωστό normalization πριν το st.image
-    def _prepare_for_display(img):
-        if img is None: return None
-        # Φέρνουμε τις τιμές στο 0-255 ανεξάρτητα από το αρχικό εύρος
-        img_min, img_max = img.min(), img.max()
-        if img_max > img_min:
-            rescaled = (img - img_min) / (img_max - img_min) * 255
-        else:
-            rescaled = img
-        return rescaled.astype(np.uint8)
-
-    # Δημιουργία των στηλών
-    show_both = stored_method == "Both (FBP + ART)"
-
-    cols = st.columns(4 if show_both else 3)
-    
-    with cols[0]:
-        st.markdown("**Original**")
-        st.image(static_orig_display, use_container_width=True)
-    
-    with cols[1]:
-        st.markdown("**Current Sinogram**")
-        sino_display = _prepare_for_display(sinogram)
-        # Κρατάμε σταθερό ύψος 256px, αφήνουμε το width να προσαρμοστεί
-        pil_sino = Image.fromarray(sino_display)
-        target_h = 256
-        target_w = int(pil_sino.width * target_h / pil_sino.height)
-        pil_sino_resized = pil_sino.resize((target_w, target_h), Image.LANCZOS)
-        st.image(pil_sino_resized, use_container_width=True)
-        st.caption(f"Shape: {sinogram.shape}")
-
-    with cols[2]:
-        if I_FBP is not None and "FBP" in str(stored_method):
-            st.markdown("**FBP Reconstruction**")
-            st.image(_prepare_for_display(_wd(I_FBP)), use_container_width=True)
-        elif I_ART is not None:
-            # Μόνο ART mode
-            st.markdown("**ART Reconstruction**")
-            st.image(_prepare_for_display(_wd(I_ART)), use_container_width=True)
-        else:
-            st.warning("No reconstruction result")
-
-    # 4η στήλη εμφανίζεται ΜΟΝΟ στο Both mode
-    if show_both and I_ART is not None:
-        with cols[3]:
-            st.markdown("**ART Reconstruction**")
-            st.image(_prepare_for_display(_wd(I_ART)), use_container_width=True)
     if sinogram is None:
-        st.info("Press **▶ Run Reconstruction** to see results.")
+        st.info("Press the button to start reconstruction of the uploaded image")
     else:
-        # Εσωτερικές βοηθητικές συναρτήσεις
-        def _norm_sino(s):
-            return (255*(s-s.min())/(s.max()-s.min()+1e-9)).astype(np.uint8)
-
-        def _show_raw(img, lbl):
-            st.markdown(f'<p class="img-label">{lbl}</p>', unsafe_allow_html=True)
-            if lbl == "Original":
-                # Εδώ το fix για το σφάλμα σου
-                st.image(static_orig_display, use_container_width=True, clamp=True)
+        # Εσωτερική βοηθητική συνάρτηση για normalization
+        def _prepare_for_display(img, target_shape=None):
+            if img is None: return None
+            
+            # 1. Normalization (0-255)
+            img_min, img_max = img.min(), img.max()
+            if img_max > img_min:
+                rescaled = (img - img_min) / (img_max - img_min) * 255
             else:
-                # Μετατροπή σε uint8 για ασφάλεια
-                display_ready = np.clip(img, 0, 255).astype(np.uint8)
-                st.image(display_ready, use_container_width=True)
+                rescaled = img
+            out_img = rescaled.astype(np.uint8)
+            
+            # 2. Αφαίρεση περιττού πλαισίου (Center Crop)
+            if target_shape is not None:
+                h_target, w_target = target_shape[0], target_shape[1]
+                h_current, w_current = out_img.shape[0], out_img.shape[1]
+                
+                # Υπολογισμός των ορίων για το κροπάρισμα στο κέντρο
+                if h_current > h_target or w_current > w_target:
+                    start_h = (h_current - h_target) // 2
+                    start_w = (w_current - w_target) // 2
+                    
+                    # Κόψιμο ακριβώς στις διαστάσεις της αρχικής
+                    out_img = out_img[start_h:start_h + h_target, start_w:start_w + w_target]
+            
+            return out_img
 
-        def _show_recon(img, lbl):
-            st.markdown(f'<p class="img-label">{lbl}</p>', unsafe_allow_html=True)
-            # Εφαρμογή Windowing ΜΟΝΟ στην ανακατασκευή
-            st.image(np.clip(_wd(img), 0, 255).astype(np.uint8), use_container_width=True)
+        # 1. ΣΥΝΟΓΡΑΜΜΑ (Οριζόντιο / Ξαπλωτό)
+        st.markdown("#### 🔍 Sinogram Analysis")
+        # Κάνουμε Transpose (.T) για να είναι οριζόντιο
+        sino_horiz = _prepare_for_display(sinogram.T)
+        st.image(sino_horiz, caption=f"Sinogram (Angles x Projections): {sinogram.shape}", use_container_width=True)
+        
+        st.divider()
 
-        # (Εδώ το logic των στηλών c1, c2, c3 παραμένει ίδιο, 
-        # αλλά πλέον οι συναρτήσεις μας χρησιμοποιούν static_orig_display)
+        # 2. ΑΝΑΚΑΤΑΣΚΕΥΗ (Σύγκριση)
+        st.markdown("####  Reconstruction Results")
+        show_both = (stored_method == "Both (FBP + ART)")
 
+        if show_both:
+            # Τρεις στήλες: Original | FBP | ART
+            c1, c2, c3 = st.columns(3)
+            with c1:
+                st.markdown("**Original**")
+                st.image(static_orig_display, use_container_width=True)
+            with c2:
+                st.markdown("**FBP Reconstruction**")
+                st.image(_prepare_for_display(_wd(I_FBP),target_shape=static_orig_display.shape), use_container_width=True)
+            with c3:
+                st.markdown("**ART Reconstruction**")
+                st.image(_prepare_for_display(_wd(I_ART),target_shape=static_orig_display.shape), use_container_width=True)
+        else:
+            # Δύο στήλες: Original | Result
+            c1, c2 = st.columns(2)
+            with c1:
+                st.markdown("**Original**")
+                st.image(static_orig_display, use_container_width=True)
+            with c2:
+                if I_FBP is not None and "FBP" in str(stored_method):
+                    st.markdown("**FBP Reconstruction**")
+                    st.image(_prepare_for_display(_wd(I_FBP),target_shape=static_orig_display.shape), use_container_width=True)
+                elif I_ART is not None:
+                    st.markdown("**ART Reconstruction**")
+                    st.image(_prepare_for_display(_wd(I_ART),target_shape=static_orig_display.shape), use_container_width=True)
+st.info("⚠️ Research Use Only - This platform is intended for educational and research purposes. It is not a certified medical device and should not be used for primary clinical diagnosis or treatment decisions.")
 render_footer()
