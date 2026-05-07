@@ -35,7 +35,7 @@ Run Locally
 Prerequisites: Python 3.8+
 bash
  1. Clone the repository
-git clone https://github.com/G-Dimitrakakis/MedIPL.git
+git clone https://github.com/G-Dimitrakakis/MedIPL_App.git
 cd MedIPL
 
  2. Install dependencies
