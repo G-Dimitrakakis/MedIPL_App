@@ -1,56 +1,81 @@
 # 🔬 MedIPL — Medical Image Processing Laboratory
 
-A free, browser-based platform for professional-grade medical image processing.
-No installation required — open it and start working.
+> A free, browser-based platform for professional-grade medical image processing — built for students, researchers, and clinicians who need powerful imaging tools without the cost or complexity of specialized software.
 
-🌐 Try the live app → https://mediplapp-zvgbbgvhwrdivtgxmdqczg.streamlit.app/
+[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://mediplapp-zvgbbgvhwrdivtgxmdqczg.streamlit.app/)
+![Python](https://img.shields.io/badge/Python-3.8+-blue?logo=python&logoColor=white)
+![License](https://img.shields.io/badge/License-Educational%20%26%20Research-green)
 
-What is MedIPL?
-MedIPL is an online medical image processing laboratory built for students, researchers, and clinicians who need access to powerful imaging tools without the cost or complexity of specialized software.
-Developed as part of an undergraduate project at the Dept. of Biomedical Engineering, University of West Attica, in collaboration with the MeDISP Lab.
+**🌐 [Try the live app — no installation required](https://mediplapp-zvgbbgvhwrdivtgxmdqczg.streamlit.app/)**
 
-# Features
-🖼️ Image Processing Tools
-1. Windowing - Standard Windowing, Live Windowing
-2. Histogram - Histogram modification techniques
-3. Spatial Filters - Full suite of spatial filtering methods
-4. Frequency Filters - Frequency domain filtering
-5. Reconstruction - Educational image reconstruction tool
+---
 
-🛠️ Extra Tools:
+![MedIPL Screenshot](images/screenshot.png)
 
-📝 Notes
-🎯 ROI (Region of Interest) Selection
-💾 Processed Image Export
+---
 
+## What is MedIPL?
 
-# Tech Stack
+MedIPL is an online medical image processing laboratory developed as part of an undergraduate project at the **Department of Biomedical Engineering, University of West Attica**, in collaboration with the **MeDISP Lab**.
 
-Language: Python
-Framework: Streamlit
-Development: AI-assisted (Anthropic Claude) under engineering direction
+The goal: give anyone — a student, a researcher, a clinician — access to a full suite of imaging tools directly in the browser. No installation, no license fees, no IT dependencies.
 
+---
 
-Run Locally
-Prerequisites: Python 3.8+
-bash
- 1. Clone the repository
+## Features
+
+### 🖼️ Image Processing Tools
+
+| Tool | Description |
+|------|-------------|
+| **Windowing** | Standard & live windowing for contrast control |
+| **Histogram** | Full range of histogram modification techniques |
+| **Spatial Filters** | Comprehensive suite of spatial domain filters |
+| **Frequency Filters** | Frequency domain filtering (FFT-based) |
+| **Reconstruction** | Educational image reconstruction tool |
+
+### 🛠️ Utilities
+
+- 📝 **Notes** — in-app annotation
+- 🎯 **ROI Selection** — Region of Interest analysis
+- 💾 **Export** — save processed images locally
+
+---
+
+## Tech Stack
+
+| | |
+|---|---|
+| **Language** | Python 3.8+ |
+| **Framework** | Streamlit |
+| **Key Libraries** | NumPy, Pillow, OpenCV, Matplotlib |
+
+---
+
+## Run Locally
+
+```bash
+# 1. Clone the repository
 git clone https://github.com/G-Dimitrakakis/MedIPL_App.git
 cd MedIPL
 
- 2. Install dependencies
+# 2. Install dependencies
 pip install -r requirements.txt
 
- 3. Launch the app
+# 3. Launch the app
 streamlit run app.py
-The app will open automatically at http://localhost:8501
+# Opens automatically at http://localhost:8501
+```
 
-# Acknowledgements
+---
 
-Professor Dionysios Cavouras — for knowledge sharing and guidance throughout the project
-MeDISP Lab, University of West Attica — for the opportunity to work on such an engaging and meaningful project
+## Acknowledgements
 
+- **Professor Dionysios Cavouras** — for guidance and knowledge sharing throughout the project
+- **MeDISP Lab, University of West Attica** — for the opportunity to work on this meaningful project
 
-License -
-This project is open for educational and research use.
-For other use cases, please get in touch.
+---
+
+## License
+
+Open for educational and research use. For other use cases, please [get in touch](https://www.linkedin.com/in/YOUR-LINKEDIN-USERNAME/).
