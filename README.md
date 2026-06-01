@@ -78,4 +78,4 @@ streamlit run app.py
 
 ## License
 
-Open for educational and research use. For other use cases, please [get in touch](https://www.linkedin.com/in/YOUR-LINKEDIN-USERNAME/).
+Open for educational and research use. For other use cases, please [get in touch](https://www.linkedin.com/in/george-dimitrakakis/).
